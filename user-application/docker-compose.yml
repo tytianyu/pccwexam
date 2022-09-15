@@ -1,0 +1,16 @@
+version: '2.1'
+services:
+  user:
+    image: com.pccwexam/user-application:${TAG:-latest}
+    network_mode: bridge
+    restart: 'always'
+    container_name: user-application-${TAG:-latest}
+    hostname: user
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/time_zone:/etc/time_zone:ro
+    environment:
+      - SERVER_PORT=${PORT:-8080}
+      - DOCKER_ADDRESS=${DOCKER_ADDRESS:-''}

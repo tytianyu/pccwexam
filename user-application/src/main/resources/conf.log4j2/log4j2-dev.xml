@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- Log4j 2.DSConfig 配置文件。每60秒自动检查和应用配置文件的更新； -->
+<Configuration status="info" monitorInterval="60" strict="true">
+	<Properties>
+		<Property name="PROJECT_NAME">user-api</Property>
+		<Property name="LOG_HOME">logs-dev/${PROJECT_NAME}</Property>
+		<Property name="LOG_GZ">${LOG_HOME}/gz</Property>
+		<Property name="COMMON_LEVEL">debug</Property>
+		<Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} | %5p | ${PID:- } | [%t] | %-40.40logger{50} | %X{ip} | %X{user} | %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}</Property>
+	</Properties>
+	<Appenders>
+		<!-- 打印debug的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+		<RollingRandomAccessFile immediateFlush="true" bufferSize="1024" name="debugFile" fileName="${LOG_HOME}/debug.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="500 MB" />
+			</Policies>
+			<Filters>
+				<!-- debug，info,error和warn 被后续处理NEUTRAL -->
+				<ThresholdFilter level="info" onmMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+		<!-- 打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+		<RollingRandomAccessFile immediateFlush="true" bufferSize="1024" name="infoFile" fileName="${LOG_HOME}/info.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="500 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只记录info级别信息，error和warn 被后续处理NEUTRAL -->
+				<ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+		<!-- 存储所有error信息 -->
+		<RollingRandomAccessFile immediateFlush="true" bufferSize="1024" name="warnFile" fileName="${LOG_HOME}/warn.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="500 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只记录warn级别信息，error 被后续处理NEUTRAL -->
+				<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+		<RollingRandomAccessFile immediateFlush="true" bufferSize="1024" name="errorFile" fileName="${LOG_HOME}/error.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="500 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只记录error级别信息 -->
+				<ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+		<!--access.log-->
+		<RollingRandomAccessFile immediateFlush="true" bufferSize="1024" name="accessFile" fileName="${LOG_HOME}/access.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/access-%d{yyyy-MM-dd}-%i.gz">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="500 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只记录error级别信息 -->
+				<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+
+		<!-- 输出到控制台，用于开发环境 -->
+		<Console name="console" target="SYSTEM_OUT">
+			<!-- 需要记录的级别 -->
+			 <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout pattern="${LOG_PATTERN}" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<AsyncRoot level="${COMMON_LEVEL}">
+			<AppenderRef ref="console" />
+<!--			<AppenderRef ref="debugFile" />-->
+			<AppenderRef ref="infoFile" />
+			<AppenderRef ref="warnFile" />
+			<AppenderRef ref="errorFile" />
+		</AsyncRoot>
+
+		<AsyncLogger name="com" level="debug">
+		</AsyncLogger>
+		<AsyncLogger name="access_log" level="info"  additivity="false">
+			<AppenderRef ref="accessFile" />
+		</AsyncLogger>
+	</Loggers>
+</Configuration>
