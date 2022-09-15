@@ -6,7 +6,7 @@ The project managed by maven,has four modules:
 2. user-domain: Domain service of user,including entity,core service and repository interface.
 3. user-infrastructure: Infrastructure of user,including some config and basic components.
 4. user-application: Backend service of user,implement of user api,can run by nested tomcat of spring boot.
-## Run project
+## How to run application
 1. mvn clean install
 2. cd user-application
 3. mvn docker:build
