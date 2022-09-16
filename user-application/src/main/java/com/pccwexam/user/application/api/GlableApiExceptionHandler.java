@@ -20,8 +20,15 @@ public class GlableApiExceptionHandler {
     public ResultBean<?> exceptionHandler(MethodArgumentNotValidException e) {
         StringBuilder errorMsg = new StringBuilder();
         e.getBindingResult().getFieldErrors().forEach(fieldError -> errorMsg.append(fieldError.getDefaultMessage()).append("!"));
-        log.warn(() -> errorMsg.toString(), e);
+        log.error(errorMsg.toString(), e);
         return ResultBeanUtil.fail(errorMsg.toString());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public ResultBean<?> exceptionHandler(Exception e) {
+        log.error("handler exception", e);
+        return ResultBeanUtil.fail("Internal Server exception");
     }
 
 }
